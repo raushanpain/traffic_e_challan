@@ -42,7 +42,7 @@ def video_sources(request):
         if form.is_valid():
             source = form.save()
             messages.success(request, f'Video source "{source.name}" created successfully.')
-            return redirect('video_sources')
+            return redirect('object_detection:video_sources')
     else:
         form = VideoSourceForm()
     
@@ -92,7 +92,7 @@ def start_detection(request, source_id):
             session.save()
             messages.error(request, f'Failed to start detection: {str(e)}')
         
-        return redirect('detection_sessions')
+        return redirect('object_detection:detection_sessions')
     
     context = {
         'source': source,
@@ -143,7 +143,7 @@ def manage_rois(request, source_id):
             roi.video_source = source
             roi.save()
             messages.success(request, f'ROI "{roi.name}" created successfully.')
-            return redirect('manage_rois', source_id=source_id)
+            return redirect('object_detection:manage_rois', source_id=source_id)
     else:
         form = ROIForm()
     
@@ -165,7 +165,7 @@ def roi_edit(request, roi_id):
         if form.is_valid():
             form.save()
             messages.success(request, f'ROI "{roi.name}" updated successfully.')
-            return redirect('manage_rois', source_id=roi.video_source.id)
+            return redirect('object_detection:manage_rois', source_id=roi.video_source.id)
     else:
         form = ROIForm(instance=roi)
     
@@ -186,7 +186,7 @@ def roi_delete(request, roi_id):
     if request.method == 'POST':
         roi.delete()
         messages.success(request, f'ROI "{roi.name}" deleted successfully.')
-        return redirect('manage_rois', source_id=source_id)
+        return redirect('object_detection:manage_rois', source_id=source_id)
     
     context = {
         'roi': roi,
@@ -216,7 +216,7 @@ def upload_video(request):
             )
             
             messages.success(request, f'Video "{video_file.name}" uploaded successfully.')
-            return redirect('video_source_detail', source_id=source.id)
+            return redirect('object_detection:video_source_detail', source_id=source.id)
         else:
             messages.error(request, 'Please select a video file.')
     
