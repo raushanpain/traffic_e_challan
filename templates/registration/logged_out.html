@@ -1,0 +1,68 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Logged Out - Smart E-Challan System{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-6 col-lg-4">
+            <div class="card shadow-lg border-0 mt-5">
+                <div class="card-header bg-success text-white text-center">
+                    <h4 class="mb-0">
+                        <i class="fas fa-sign-out-alt me-2"></i>
+                        Successfully Logged Out
+                    </h4>
+                </div>
+                <div class="card-body p-4 text-center">
+                    <div class="mb-4">
+                        <i class="fas fa-check-circle fa-3x text-success mb-3"></i>
+                        <h5>You have been successfully logged out</h5>
+                        <p class="text-muted">Thank you for using Smart E-Challan System</p>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <a href="{% url 'login' %}" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt me-2"></i>
+                            Login Again
+                        </a>
+                        <a href="{% url 'challan_app:dashboard' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-home me-2"></i>
+                            Go to Dashboard
+                        </a>
+                    </div>
+                </div>
+                <div class="card-footer text-center text-muted">
+                    <small>
+                        <i class="fas fa-shield-alt me-1"></i>
+                        Secure Logout Completed
+                    </small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        border-radius: 1rem;
+        overflow: hidden;
+    }
+    
+    .card-header {
+        border-bottom: none;
+        padding: 1.5rem;
+    }
+    
+    .btn {
+        border-radius: 0.5rem;
+        padding: 0.75rem 1.5rem;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    
+    .btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+</style>
+{% endblock %}

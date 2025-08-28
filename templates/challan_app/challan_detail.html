@@ -1,0 +1,140 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Challan {{ challan.challan_number }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Challan Details</h1>
+        <div>
+            <a href="{% url 'challan_edit' challan.id %}" class="btn btn-warning">
+                <i class="fas fa-edit"></i> Edit
+            </a>
+            <a href="#" class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteModal">
+                <i class="fas fa-trash"></i> Delete
+            </a>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Challan Information -->
+        <div class="col-lg-8">
+            <div class="card mb-4">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0">Challan #{{ challan.challan_number }}</h5>
+                    <span class="badge bg-{% if challan.status == 'PAID' %}success{% elif challan.status == 'PENDING' %}warning{% else %}danger{% endif %}">
+                        {{ challan.get_status_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-3">
+                        <div class="col-sm-4"><strong>Vehicle:</strong></div>
+                        <div class="col-sm-8"><a href="{% url 'vehicle_detail' challan.vehicle.id %}">{{ challan.vehicle.registration_number }}</a></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4"><strong>Owner:</strong></div>
+                        <div class="col-sm-8">{{ challan.vehicle.owner_name }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4"><strong>Violation:</strong></div>
+                        <div class="col-sm-8">{{ challan.violation_type.name }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4"><strong>Fine Amount:</strong></div>
+                        <div class="col-sm-8">₹{{ challan.fine_amount }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4"><strong>Penalty Points:</strong></div>
+                        <div class="col-sm-8">{{ challan.penalty_points }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4"><strong>Issued At:</strong></div>
+                        <div class="col-sm-8">{{ challan.issued_at|date:"d M Y, H:i" }}</div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-sm-4"><strong>Issued By:</strong></div>
+                        <div class="col-sm-8">{{ challan.issued_by.get_full_name|default:challan.issued_by.username }}</div>
+                    </div>
+                    {% if challan.notes %}
+                    <div class="row">
+                        <div class="col-sm-4"><strong>Notes:</strong></div>
+                        <div class="col-sm-8">{{ challan.notes|linebreaksbr }}</div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Evidence -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Violation Evidence</h5>
+                </div>
+                <div class="card-body">
+                    {% if evidence %}
+                        <div class="row">
+                            {% for item in evidence %}
+                            <div class="col-md-4 mb-3">
+                                <a href="{{ item.file.url }}" data-bs-toggle="lightbox">
+                                    <img src="{{ item.file.url }}" class="img-fluid rounded" alt="Evidence">
+                                </a>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    {% else %}
+                        <p>No evidence submitted for this challan.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Payment Information -->
+        <div class="col-lg-4">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Payment Status</h5>
+                </div>
+                <div class="card-body">
+                    {% if challan.status == 'PAID' %}
+                        <div class="alert alert-success">
+                            <h6 class="alert-heading">Payment Complete</h6>
+                            <p>Paid on: {{ payment.paid_at|date:"d M Y" }}</p>
+                            <p>Transaction ID: {{ payment.transaction_id }}</p>
+                        </div>
+                    {% else %}
+                        <p>This challan is currently <strong>{{ challan.get_status_display }}</strong>.</p>
+                        <form id="paymentForm" action="{% url 'process_payment' challan.id %}" method="post">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-success w-100">
+                                <i class="fas fa-credit-card"></i> Pay Now (₹{{ challan.fine_amount }})
+                            </button>
+                        </form>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteModalLabel">Confirm Deletion</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete challan #{{ challan.challan_number }}? This action cannot be undone.
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <form action="{% url 'challan_delete' challan.id %}" method="post">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

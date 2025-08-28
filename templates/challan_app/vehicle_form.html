@@ -1,0 +1,154 @@
+{% extends 'base/base.html' %} {% block title %}{{ title }} - Smart E-Challan
+System{% endblock %} {% block content %}
+<div
+  class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+>
+  <h1 class="h2">{{ title }}</h1>
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <a
+      href="{% url 'challan_app:vehicle_list' %}"
+      class="btn btn-sm btn-outline-secondary"
+    >
+      <i class="fas fa-arrow-left me-1"></i> Back to List
+    </a>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <div class="card shadow">
+      <div class="card-header">
+        <h5 class="mb-0">Vehicle Information</h5>
+      </div>
+      <div class="card-body">
+        <form method="post">
+          {% csrf_token %}
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label
+                for="{{ form.registration_number.id_for_label }}"
+                class="form-label"
+              >
+                Registration Number *
+              </label>
+              {{ form.registration_number }}
+              {% if form.registration_number.errors %}
+              <div class="text-danger small">
+                {{ form.registration_number.errors.0 }}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label
+                for="{{ form.vehicle_type.id_for_label }}"
+                class="form-label"
+              >
+                Vehicle Type *
+              </label>
+              {{ form.vehicle_type }}
+              {% if form.vehicle_type.errors %}
+              <div class="text-danger small">
+                {{ form.vehicle_type.errors.0 }}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label
+                for="{{ form.owner_name.id_for_label }}"
+                class="form-label"
+              >
+                Owner Name *
+              </label>
+              {{ form.owner_name }}
+              {% if form.owner_name.errors %}
+              <div class="text-danger small">
+                {{ form.owner_name.errors.0 }}
+              </div>
+              {% endif %}
+            </div>
+
+            <div class="col-md-6 mb-3">
+              <label
+                for="{{ form.owner_phone.id_for_label }}"
+                class="form-label"
+              >
+                Phone Number *
+              </label>
+              {{ form.owner_phone }}
+              {% if form.owner_phone.errors %}
+              <div class="text-danger small">
+                {{ form.owner_phone.errors.0 }}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+
+          <div class="mb-3">
+            <label for="{{ form.owner_email.id_for_label }}" class="form-label">
+              Email Address
+            </label>
+            {{ form.owner_email }}
+            {% if form.owner_email.errors %}
+            <div class="text-danger small">{{ form.owner_email.errors.0 }}</div>
+            {% endif %}
+          </div>
+
+          <div class="mb-3">
+            <label
+              for="{{ form.owner_address.id_for_label }}"
+              class="form-label"
+            >
+              Address *
+            </label>
+            {{ form.owner_address }}
+            {% if form.owner_address.errors %}
+            <div class="text-danger small">
+              {{ form.owner_address.errors.0 }}
+            </div>
+            {% endif %}
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <a
+              href="{% url 'challan_app:vehicle_list' %}"
+              class="btn btn-secondary"
+            >
+              Cancel
+            </a>
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-save me-1"></i> Save Vehicle
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <div class="card shadow">
+      <div class="card-header">
+        <h6 class="mb-0">Help</h6>
+      </div>
+      <div class="card-body">
+        <p class="small text-muted">
+          <strong>Registration Number:</strong> Enter the official vehicle
+          registration number as shown on the RC book.
+        </p>
+        <p class="small text-muted">
+          <strong>Vehicle Type:</strong> Select the appropriate category for the
+          vehicle.
+        </p>
+        <p class="small text-muted">
+          <strong>Owner Details:</strong> Provide complete and accurate owner
+          information for challan processing.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

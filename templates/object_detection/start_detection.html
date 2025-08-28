@@ -1,0 +1,26 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Start Detection{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h1 class="h3 mb-0">Start Detection on {{ source.name }}</h1>
+        </div>
+        <div class="card-body">
+            <p>You are about to start a new object detection session on the video source: <strong>{{ source.name }}</strong>.</p>
+            <p>This will begin processing the video stream or file to detect objects based on the configured models.</p>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="d-flex justify-content-end">
+                    <a href="{% url 'object_detection:video_source_detail' source.id %}" class="btn btn-secondary me-2">Cancel</a>
+                    <button type="submit" class="btn btn-success">Confirm & Start</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

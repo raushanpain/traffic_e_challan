@@ -1,0 +1,51 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Manage ROIs for {{ source.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="h3 mb-4">Manage ROIs for {{ source.name }}</h1>
+
+    <div class="row">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    Existing ROIs
+                </div>
+                <div class="card-body">
+                    {% if rois %}
+                    <ul class="list-group">
+                        {% for roi in rois %}
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            {{ roi.name }} ({{ roi.roi_type }})
+                            <div>
+                                <a href="{% url 'object_detection:roi_edit' roi.id %}" class="btn btn-sm btn-warning">Edit</a>
+                                <a href="{% url 'object_detection:roi_delete' roi.id %}" class="btn btn-sm btn-danger">Delete</a>
+                            </div>
+                        </li>
+                        {% endfor %}
+                    </ul>
+                    {% else %}
+                    <p>No ROIs defined for this source yet.</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card">
+                <div class="card-header">
+                    Add New ROI
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        {{ form.as_p }}
+                        <button type="submit" class="btn btn-primary">Add ROI</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,225 @@
+{% extends 'base/base.html' %}
+
+{% block title %}Dashboard - Smart E-Challan System{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Dashboard</h1>
+    <div class="btn-toolbar mb-2 mb-md-0">
+        <div class="btn-group me-2">
+            <a href="{% url 'challan_app:challan_create' %}" class="btn btn-sm btn-primary">
+                <i class="fas fa-plus me-1"></i> New Challan
+            </a>
+            <a href="{% url 'challan_app:vehicle_create' %}" class="btn btn-sm btn-outline-secondary">
+                <i class="fas fa-car me-1"></i> Add Vehicle
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-primary shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                            Total Vehicles</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_vehicles }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-car fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-success shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                            Total Challans</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ total_challans }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-ticket-alt fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-warning shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                            Pending Challans</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">{{ pending_challans }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-clock fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-3 col-md-6 mb-4">
+        <div class="card border-left-info shadow h-100 py-2">
+            <div class="card-body">
+                <div class="row no-gutters align-items-center">
+                    <div class="col mr-2">
+                        <div class="text-xs font-weight-bold text-info text-uppercase mb-1">
+                            Monthly Revenue</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800">₹{{ monthly_revenue|floatformat:2 }}</div>
+                    </div>
+                    <div class="col-auto">
+                        <i class="fas fa-rupee-sign fa-2x text-gray-300"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Monthly Statistics -->
+<div class="row mb-4">
+    <div class="col-xl-6 col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Monthly Overview</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6">
+                        <div class="text-center">
+                            <div class="h4 text-primary">{{ monthly_challans }}</div>
+                            <div class="text-muted">Challans This Month</div>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="text-center">
+                            <div class="h4 text-success">{{ paid_challans }}</div>
+                            <div class="text-muted">Paid Challans</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-6 col-lg-6">
+        <div class="card shadow mb-4">
+            <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+                <h6 class="m-0 font-weight-bold text-primary">Quick Actions</h6>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-6 mb-2">
+                        <a href="{% url 'challan_app:challan_create' %}" class="btn btn-primary btn-sm w-100">
+                            <i class="fas fa-plus me-1"></i> Issue Challan
+                        </a>
+                    </div>
+                    <div class="col-6 mb-2">
+                        <a href="{% url 'challan_app:vehicle_create' %}" class="btn btn-outline-primary btn-sm w-100">
+                            <i class="fas fa-car me-1"></i> Add Vehicle
+                        </a>
+                    </div>
+                    <div class="col-6 mb-2">
+                        <a href="{% url 'challan_app:reports' %}" class="btn btn-outline-info btn-sm w-100">
+                            <i class="fas fa-chart-bar me-1"></i> View Reports
+                        </a>
+                    </div>
+                    <div class="col-6 mb-2">
+                        <a href="{% url 'object_detection:dashboard' %}" class="btn btn-outline-warning btn-sm w-100">
+                            <i class="fas fa-video me-1"></i> Detection
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Recent Challans -->
+<div class="card shadow mb-4">
+    <div class="card-header py-3 d-flex flex-row align-items-center justify-content-between">
+        <h6 class="m-0 font-weight-bold text-primary">Recent Challans</h6>
+        <a href="{% url 'challan_app:challan_list' %}" class="btn btn-sm btn-outline-primary">View All</a>
+    </div>
+    <div class="card-body">
+        {% if recent_challans %}
+        <div class="table-responsive">
+            <table class="table table-bordered" width="100%" cellspacing="0">
+                <thead>
+                    <tr>
+                        <th>Challan No.</th>
+                        <th>Vehicle</th>
+                        <th>Violation</th>
+                        <th>Amount</th>
+                        <th>Status</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for challan in recent_challans %}
+                    <tr>
+                        <td>
+                            <a href="{% url 'challan_app:challan_detail' challan.id %}" class="text-decoration-none">
+                                {{ challan.challan_number }}
+                            </a>
+                        </td>
+                        <td>
+                            <a href="{% url 'challan_app:vehicle_detail' challan.vehicle.id %}" class="text-decoration-none">
+                                {{ challan.vehicle.registration_number }}
+                            </a>
+                        </td>
+                        <td>{{ challan.violation_type.name }}</td>
+                        <td>₹{{ challan.fine_amount }}</td>
+                        <td>
+                            <span class="badge {% if challan.status == 'PENDING' %}bg-warning{% elif challan.status == 'PAID' %}bg-success{% else %}bg-secondary{% endif %}">
+                                {{ challan.status }}
+                            </span>
+                        </td>
+                        <td>{{ challan.issued_at|date:"M d, Y" }}</td>
+                        <td>
+                            <a href="{% url 'challan_app:challan_detail' challan.id %}" class="btn btn-sm btn-outline-primary">
+                                <i class="fas fa-eye"></i>
+                            </a>
+                            <a href="{% url 'challan_app:challan_edit' challan.id %}" class="btn btn-sm btn-outline-secondary">
+                                <i class="fas fa-edit"></i>
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+            <p class="text-muted">No challans issued yet.</p>
+            <a href="{% url 'challan_app:challan_create' %}" class="btn btn-primary">
+                <i class="fas fa-plus me-1"></i> Issue First Challan
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Auto-refresh dashboard every 30 seconds
+    setTimeout(function() {
+        location.reload();
+    }, 30000);
+</script>
+{% endblock %}

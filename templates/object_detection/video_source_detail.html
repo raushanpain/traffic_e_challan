@@ -1,0 +1,83 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Video Source: {{ source.name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="h3 mb-4">Video Source: {{ source.name }}</h1>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Source Details -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    Source Details
+                </div>
+                <div class="card-body">
+                    <p><strong>Type:</strong> {{ source.get_source_type_display }}</p>
+                    <p><strong>URL/Path:</strong> {{ source.source_url|default:source.file_path }}</p>
+                    <p><strong>Status:</strong> {% if source.is_active %}Active{% else %}Inactive{% endif %}</p>
+                    <p><strong>Description:</strong> {{ source.description|default:"N/A" }}</p>
+                </div>
+            </div>
+
+            <!-- Recent Detections -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    Recent Detections
+                </div>
+                <div class="card-body">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Timestamp</th>
+                                <th>Objects Detected</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for detection in recent_detections %}
+                            <tr>
+                                <td>{{ detection.timestamp|date:"H:i:s" }}</td>
+                                <td>{{ detection.detected_objects|join:", " }}</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="2" class="text-center">No detections yet.</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Actions -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    Actions
+                </div>
+                <div class="card-body">
+                    <a href="{% url 'object_detection:start_detection' source.id %}" class="btn btn-success mb-2 w-100">Start Detection</a>
+                    <a href="{% url 'object_detection:manage_rois' source.id %}" class="btn btn-primary mb-2 w-100">Manage ROIs</a>
+                </div>
+            </div>
+
+            <!-- ROIs -->
+            <div class="card">
+                <div class="card-header">
+                    Regions of Interest (ROIs)
+                </div>
+                <ul class="list-group list-group-flush">
+                    {% for roi in rois %}
+                    <li class="list-group-item">{{ roi.name }}</li>
+                    {% empty %}
+                    <li class="list-group-item">No ROIs defined.</li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

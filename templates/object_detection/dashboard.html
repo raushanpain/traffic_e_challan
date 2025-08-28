@@ -1,0 +1,90 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Detection Dashboard{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="h3 mb-4">Object Detection Dashboard</h1>
+
+    <!-- Key Metrics -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-white bg-success mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Active Sessions</h5>
+                    <p class="card-text fs-4">{{ active_sessions }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Video Sources</h5>
+                    <p class="card-text fs-4">{{ total_sources }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-secondary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Models Loaded</h5>
+                    <p class="card-text fs-4">1</p> {# Placeholder #}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card mb-4">
+        <div class="card-header">
+            Quick Actions
+        </div>
+        <div class="card-body">
+            <a href="{% url 'object_detection:video_sources' %}" class="btn btn-primary">Manage Video Sources</a>
+            <a href="{% url 'object_detection:detection_sessions' %}" class="btn btn-info">View Detection Sessions</a>
+            <a href="{% url 'object_detection:upload_video' %}" class="btn btn-secondary">Upload Video</a>
+            <a href="{% url 'object_detection:live_detection' %}" class="btn btn-danger">Live Detection</a>
+        </div>
+    </div>
+
+    <!-- Recent Detections -->
+    <div class="card">
+        <div class="card-header">
+            Recent Detections
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Timestamp</th>
+                            <th>Video Source</th>
+                            <th>Detected Objects</th>
+                            <th>Session</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for detection in recent_detections %}
+                        <tr>
+                            <td>{{ detection.timestamp|date:"d M Y, H:i:s" }}</td>
+                            <td><a href="{% url 'object_detection:video_source_detail' detection.video_source.id %}">{{ detection.video_source.name }}</a></td>
+                            <td>{{ detection.detected_objects|join:", " }}</td>
+                            <td><a href="{% url 'object_detection:session_detail' detection.session.id %}">{{ detection.session.session_name }}</a></td>
+                            <td>
+                                <a href="#" class="btn btn-sm btn-info">View Details</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No recent detections found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

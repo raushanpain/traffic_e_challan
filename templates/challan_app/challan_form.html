@@ -1,0 +1,83 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card">
+        <div class="card-header">
+            <h1 class="h3 mb-0">{{ title }}</h1>
+        </div>
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                
+                {% if form.non_field_errors %}
+                    <div class="alert alert-danger">
+                        {% for error in form.non_field_errors %}
+                            <p>{{ error }}</p>
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.vehicle.id_for_label }}" class="form-label">{{ form.vehicle.label }}</label>
+                        {{ form.vehicle }}
+                        {% if form.vehicle.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.vehicle.errors.as_text }}
+                            </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="{{ form.violation_type.id_for_label }}" class="form-label">{{ form.violation_type.label }}</label>
+                        {{ form.violation_type }}
+                        {% if form.violation_type.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.violation_type.errors.as_text }}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.fine_amount.id_for_label }}" class="form-label">{{ form.fine_amount.label }}</label>
+                    {{ form.fine_amount }}
+                    {% if form.fine_amount.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.fine_amount.errors.as_text }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.penalty_points.id_for_label }}" class="form-label">{{ form.penalty_points.label }}</label>
+                    {{ form.penalty_points }}
+                    {% if form.penalty_points.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.penalty_points.errors.as_text }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="mb-3">
+                    <label for="{{ form.notes.id_for_label }}" class="form-label">{{ form.notes.label }}</label>
+                    {{ form.notes }}
+                    {% if form.notes.errors %}
+                        <div class="invalid-feedback d-block">
+                            {{ form.notes.errors.as_text }}
+                        </div>
+                    {% endif %}
+                </div>
+
+                <div class="d-flex justify-content-end">
+                    <a href="{% if challan %}{% url 'challan_app:challan_detail' challan.id %}{% else %}{% url 'challan_app:challan_list' %}{% endif %}" class="btn btn-secondary me-2">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save Challan</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

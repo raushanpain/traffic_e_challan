@@ -1,0 +1,51 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Detection Sessions{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="h3 mb-4">Detection Sessions</h1>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Session Name</th>
+                            <th>User</th>
+                            <th>Status</th>
+                            <th>Started At</th>
+                            <th>Ended At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for session in sessions %}
+                        <tr>
+                            <td><a href="{% url 'object_detection:session_detail' session.id %}">{{ session.session_name }}</a></td>
+                            <td>{{ session.user.username }}</td>
+                            <td>
+                                <span class="badge bg-{% if session.status == 'ACTIVE' %}success{% elif session.status == 'COMPLETED' %}primary{% else %}danger{% endif %}">
+                                    {{ session.get_status_display }}
+                                </span>
+                            </td>
+                            <td>{{ session.started_at|date:"d M Y, H:i" }}</td>
+                            <td>{{ session.ended_at|date:"d M Y, H:i"|default:"-" }}</td>
+                            <td>
+                                <a href="{% url 'object_detection:session_detail' session.id %}" class="btn btn-sm btn-info">View Details</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="6" class="text-center">No detection sessions found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

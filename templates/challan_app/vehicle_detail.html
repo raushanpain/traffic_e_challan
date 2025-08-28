@@ -1,0 +1,204 @@
+{% extends 'base/base.html' %} {% block title %}Vehicle Details - Smart
+E-Challan System{% endblock %} {% block content %}
+<div
+  class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom"
+>
+  <h1 class="h2">Vehicle Details</h1>
+  <div class="btn-toolbar mb-2 mb-md-0">
+    <a
+      href="{% url 'challan_app:vehicle_list' %}"
+      class="btn btn-sm btn-outline-secondary"
+    >
+      <i class="fas fa-arrow-left me-1"></i> Back to List
+    </a>
+    <a
+      href="{% url 'challan_app:vehicle_edit' vehicle.id %}"
+      class="btn btn-sm btn-primary ms-2"
+    >
+      <i class="fas fa-edit me-1"></i> Edit Vehicle
+    </a>
+  </div>
+</div>
+
+<div class="row">
+  <div class="col-md-8">
+    <!-- Vehicle Information -->
+    <div class="card shadow mb-4">
+      <div class="card-header">
+        <h5 class="mb-0">Vehicle Information</h5>
+      </div>
+      <div class="card-body">
+        <div class="row">
+          <div class="col-md-6">
+            <p>
+              <strong>Registration Number:</strong><br />{{
+              vehicle.registration_number }}
+            </p>
+            <p>
+              <strong>Vehicle Type:</strong><br />
+              <span class="badge bg-info"
+                >{{ vehicle.get_vehicle_type_display }}</span
+              >
+            </p>
+            <p><strong>Owner Name:</strong><br />{{ vehicle.owner_name }}</p>
+          </div>
+          <div class="col-md-6">
+            <p><strong>Phone Number:</strong><br />{{ vehicle.owner_phone }}</p>
+            <p>
+              <strong>Email:</strong><br />{{ vehicle.owner_email|default:"Not
+              provided" }}
+            </p>
+            <p>
+              <strong>Created:</strong><br />{{ vehicle.created_at|date:"M d, Y
+              H:i" }}
+            </p>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-12">
+            <p><strong>Address:</strong><br />{{ vehicle.owner_address }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Challan History -->
+    <div class="card shadow">
+      <div
+        class="card-header d-flex justify-content-between align-items-center"
+      >
+        <h5 class="mb-0">Challan History</h5>
+        <a
+          href="{% url 'challan_app:challan_create' %}"
+          class="btn btn-sm btn-primary"
+        >
+          <i class="fas fa-plus me-1"></i> Issue Challan
+        </a>
+      </div>
+      <div class="card-body">
+        {% if challans %}
+        <div class="table-responsive">
+          <table class="table table-hover">
+            <thead>
+              <tr>
+                <th>Challan No.</th>
+                <th>Violation</th>
+                <th>Amount</th>
+                <th>Status</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for challan in challans %}
+              <tr>
+                <td>
+                  <a
+                    href="{% url 'challan_app:challan_detail' challan.id %}"
+                    class="text-decoration-none"
+                  >
+                    {{ challan.challan_number }}
+                  </a>
+                </td>
+                <td>{{ challan.violation_type.name }}</td>
+                <td>₹{{ challan.fine_amount }}</td>
+                <td>
+                  <span
+                    class="badge {% if challan.status == 'PENDING' %}bg-warning{% elif challan.status == 'PAID' %}bg-success{% else %}bg-secondary{% endif %}"
+                  >
+                    {{ challan.status }}
+                  </span>
+                </td>
+                <td>{{ challan.issued_at|date:"M d, Y" }}</td>
+                <td>
+                  <a
+                    href="{% url 'challan_app:challan_detail' challan.id %}"
+                    class="btn btn-sm btn-outline-primary"
+                  >
+                    <i class="fas fa-eye"></i>
+                  </a>
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+          <i class="fas fa-ticket-alt fa-3x text-muted mb-3"></i>
+          <h5 class="text-muted">No challans issued</h5>
+          <p class="text-muted">This vehicle has no violation history.</p>
+          <a
+            href="{% url 'challan_app:challan_create' %}"
+            class="btn btn-primary"
+          >
+            <i class="fas fa-plus me-1"></i> Issue First Challan
+          </a>
+        </div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+
+  <div class="col-md-4">
+    <!-- Statistics -->
+    <div class="card shadow mb-4">
+      <div class="card-header">
+        <h6 class="mb-0">Statistics</h6>
+      </div>
+      <div class="card-body">
+        <div class="row text-center">
+          <div class="col-6">
+            <div class="h4 text-primary">{{ challans.count }}</div>
+            <div class="text-muted small">Total Challans</div>
+          </div>
+          <div class="col-6">
+            <div class="h4 text-success">₹{{ total_fines|floatformat:2 }}</div>
+            <div class="text-muted small">Total Fines</div>
+          </div>
+        </div>
+        <hr />
+        <div class="row text-center">
+          <div class="col-6">
+            <div class="h4 text-warning">{{ total_points }}</div>
+            <div class="text-muted small">Penalty Points</div>
+          </div>
+          <div class="col-6">
+            <div class="h4 text-info">{{ challans.count|add:"0" }}</div>
+            <div class="text-muted small">This Year</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Quick Actions -->
+    <div class="card shadow">
+      <div class="card-header">
+        <h6 class="mb-0">Quick Actions</h6>
+      </div>
+      <div class="card-body">
+        <div class="d-grid gap-2">
+          <a
+            href="{% url 'challan_app:challan_create' %}"
+            class="btn btn-primary btn-sm"
+          >
+            <i class="fas fa-plus me-1"></i> Issue Challan
+          </a>
+          <a
+            href="{% url 'challan_app:vehicle_edit' vehicle.id %}"
+            class="btn btn-outline-secondary btn-sm"
+          >
+            <i class="fas fa-edit me-1"></i> Edit Vehicle
+          </a>
+          <a
+            href="{% url 'challan_app:vehicle_list' %}"
+            class="btn btn-outline-info btn-sm"
+          >
+            <i class="fas fa-list me-1"></i> View All Vehicles
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

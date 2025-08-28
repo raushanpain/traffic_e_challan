@@ -1,0 +1,57 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Session: {{ session.session_name }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="h3 mb-4">Session Details</h1>
+
+    <!-- Session Info -->
+    <div class="card mb-4">
+        <div class="card-header">
+            {{ session.session_name }}
+        </div>
+        <div class="card-body">
+            <p><strong>Status:</strong> {{ session.get_status_display }}</p>
+            <p><strong>Started:</strong> {{ session.started_at }}</p>
+            <p><strong>Ended:</strong> {{ session.ended_at|default:"Still active" }}</p>
+            <p><strong>Total Frames Processed:</strong> {{ total_frames }}</p>
+            <p><strong>Average Processing Time:</strong> {{ avg_processing_time|floatformat:4 }}s</p>
+        </div>
+    </div>
+
+    <!-- Detection Results -->
+    <div class="card">
+        <div class="card-header">
+            Detection Results
+        </div>
+        <div class="card-body">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Timestamp</th>
+                        <th>Frame</th>
+                        <th>Objects</th>
+                        <th>Confidence</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for result in results %}
+                    <tr>
+                        <td>{{ result.timestamp|date:"H:i:s.u" }}</td>
+                        <td>{{ result.frame_number }}</td>
+                        <td>{{ result.detected_objects|join:", " }}</td>
+                        <td>{{ result.confidence_scores|join:", " }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="text-center">No results for this session yet.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

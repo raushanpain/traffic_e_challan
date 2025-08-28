@@ -1,0 +1,102 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Challan List{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Challans</h1>
+        <a href="{% url 'challan_app:challan_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Issue New Challan
+        </a>
+    </div>
+
+    <!-- Search and Filter -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get" action="{% url 'challan_app:challan_list' %}">
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <input type="text" name="q" class="form-control" placeholder="Search by Challan No, Vehicle No, or Owner Name" value="{{ query|default:'' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <select name="status" class="form-select">
+                            <option value="">All Statuses</option>
+                            {% for value, name in status_choices %}
+                                <option value="{{ value }}" {% if status_filter == value %}selected{% endif %}>{{ name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-secondary w-100">Search</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Challan Number</th>
+                            <th>Vehicle</th>
+                            <th>Violation</th>
+                            <th>Fine Amount</th>
+                            <th>Status</th>
+                            <th>Issued At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for challan in page_obj %}
+                        <tr>
+                            <td><a href="{% url 'challan_app:challan_detail' challan.id %}">{{ challan.challan_number }}</a></td>
+                            <td><a href="{% url 'challan_app:vehicle_detail' challan.vehicle.id %}">{{ challan.vehicle.registration_number }}</a></td>
+                            <td>{{ challan.violation_type.name }}</td>
+                            <td>₹{{ challan.fine_amount }}</td>
+                            <td>
+                                <span class="badge bg-{% if challan.status == 'PAID' %}success{% elif challan.status == 'PENDING' %}warning{% else %}danger{% endif %}">
+                                    {{ challan.get_status_display }}
+                                </span>
+                            </td>
+                            <td>{{ challan.issued_at|date:"d M Y, H:i" }}</td>
+                            <td>
+                                <a href="{% url 'challan_app:challan_detail' challan.id %}" class="btn btn-sm btn-info">View</a>
+                                <a href="{% url 'challan_app:challan_edit' challan.id %}" class="btn btn-sm btn-warning">Edit</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="7" class="text-center">No challans found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pagination -->
+    {% if page_obj.has_other_pages %}
+    <nav aria-label="Page navigation" class="mt-4">
+        <ul class="pagination justify-content-center">
+            {% if page_obj.has_previous %}
+                <li class="page-item"><a class="page-link" href="?page=1&q={{ query|default:'' }}&status={{ status_filter|default:'' }}">&laquo; First</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.previous_page_number }}&q={{ query|default:'' }}&status={{ status_filter|default:'' }}">Previous</a></li>
+            {% endif %}
+
+            <li class="page-item disabled"><span class="page-link">Page {{ page_obj.number }} of {{ page_obj.paginator.num_pages }}</span></li>
+
+            {% if page_obj.has_next %}
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.next_page_number }}&q={{ query|default:'' }}&status={{ status_filter|default:'' }}">Next</a></li>
+                <li class="page-item"><a class="page-link" href="?page={{ page_obj.paginator.num_pages }}&q={{ query|default:'' }}&status={{ status_filter|default:'' }}">Last &raquo;</a></li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,77 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Video Sources{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="h3">Video Sources</h1>
+        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addSourceModal">
+            <i class="fas fa-plus"></i> Add New Source
+        </button>
+    </div>
+
+    <div class="card">
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                            <th>Status</th>
+                            <th>Created At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for source in sources %}
+                        <tr>
+                            <td><a href="{% url 'object_detection:video_source_detail' source.id %}">{{ source.name }}</a></td>
+                            <td>{{ source.get_source_type_display }}</td>
+                            <td>
+                                {% if source.is_active %}
+                                    <span class="badge bg-success">Active</span>
+                                {% else %}
+                                    <span class="badge bg-secondary">Inactive</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ source.created_at|date:"d M Y" }}</td>
+                            <td>
+                                <a href="{% url 'object_detection:video_source_detail' source.id %}" class="btn btn-sm btn-info">View</a>
+                                <a href="#" class="btn btn-sm btn-warning">Edit</a>
+                                <a href="{% url 'object_detection:start_detection' source.id %}" class="btn btn-sm btn-success">Start Detection</a>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="5" class="text-center">No video sources found.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Source Modal -->
+<div class="modal fade" id="addSourceModal" tabindex="-1" aria-labelledby="addSourceModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addSourceModalLabel">Add New Video Source</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="{% url 'object_detection:video_sources' %}">
+                    {% csrf_token %}
+                    {{ form.as_p }}
+                    <button type="submit" class="btn btn-primary">Save Source</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

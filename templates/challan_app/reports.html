@@ -1,0 +1,171 @@
+{% extends "base/base.html" %}
+{% load static %}
+
+{% block title %}Reports & Analytics{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="h3 mb-4">Reports & Analytics</h1>
+
+    <!-- Date Range and Filters -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <form method="get">
+                <div class="row align-items-end g-3">
+                    <div class="col-md-4">
+                        <label for="start_date" class="form-label">Start Date</label>
+                        <input type="date" id="start_date" name="start_date" class="form-control" value="{{ start_date|date:'Y-m-d' }}">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="end_date" class="form-label">End Date</label>
+                        <input type="date" id="end_date" name="end_date" class="form-control" value="{{ end_date|date:'Y-m-d' }}">
+                    </div>
+                    <div class="col-md-2">
+                        <button type="submit" class="btn btn-primary w-100">Apply</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card text-white bg-primary mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Revenue</h5>
+                    <p class="card-text fs-4">₹{{ total_revenue|default:'0.00' }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-info mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Total Challans Issued</h5>
+                    <p class="card-text fs-4">{{ total_challans }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card text-white bg-warning mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">Pending Challans</h5>
+                    <p class="card-text fs-4">{{ pending_challans }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts -->
+    <div class="row">
+        <div class="col-lg-7">
+            <div class="card mb-4">
+                <div class="card-header">
+                    Challans Issued Over Time
+                </div>
+                <div class="card-body">
+                    <canvas id="dailyChallansChart"></canvas>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="card mb-4">
+                <div class="card-header">
+                    Violations by Type
+                </div>
+                <div class="card-body">
+                    <canvas id="violationTypesChart"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Violation Statistics Table -->
+    <div class="card">
+        <div class="card-header">
+            Violation Statistics
+        </div>
+        <div class="card-body">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Violation Type</th>
+                            <th>Number of Challans</th>
+                            <th>Total Fine Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for stat in violation_stats %}
+                        <tr>
+                            <td>{{ stat.violation_type__name }}</td>
+                            <td>{{ stat.count }}</td>
+                            <td>₹{{ stat.total_fine|default:'0.00' }}</td>
+                        </tr>
+                        {% empty %}
+                        <tr>
+                            <td colspan="3" class="text-center">No data available for the selected period.</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function() {
+    // Daily Challans Chart
+    var ctxDaily = document.getElementById('dailyChallansChart').getContext('2d');
+    var dailyChallansChart = new Chart(ctxDaily, {
+        type: 'line',
+        data: {
+            labels: [{% for item in daily_challans %}"{{ item.day|date:'d M' }}"{% if not forloop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                label: 'Challans Issued',
+                data: [{% for item in daily_challans %}{{ item.count }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                borderColor: 'rgba(75, 192, 192, 1)',
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                fill: true,
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // Violation Types Chart
+    var ctxViolation = document.getElementById('violationTypesChart').getContext('2d');
+    var violationTypesChart = new Chart(ctxViolation, {
+        type: 'doughnut',
+        data: {
+            labels: [{% for stat in violation_stats %}"{{ stat.violation_type__name }}"{% if not forloop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                label: 'Number of Challans',
+                data: [{% for stat in violation_stats %}{{ stat.count }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.7)',
+                    'rgba(54, 162, 235, 0.7)',
+                    'rgba(255, 206, 86, 0.7)',
+                    'rgba(75, 192, 192, 0.7)',
+                    'rgba(153, 102, 255, 0.7)',
+                    'rgba(255, 159, 64, 0.7)'
+                ],
+            }]
+        },
+        options: {
+            responsive: true,
+        }
+    });
+});
+</script>
+{% endblock %}
